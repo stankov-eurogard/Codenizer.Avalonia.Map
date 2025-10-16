@@ -61,7 +61,7 @@ public class Map : Control
                 DiagnosticsCaptured?.Invoke(this, new MapDiagnosticsEventArgs(args.RenderDuration, args.Scale, args.MapObjectsBounds, args.ViewportBounds, args.ExtentBounds));
             }
         };
-        
+
         AffectsMeasure<Map>(MapObjectsProperty);
         AffectsRender<Map>(MapObjectsProperty);
         AffectsRender<Map>(AllowUserPanProperty);
@@ -122,7 +122,7 @@ public class Map : Control
         {
             if (value == _allowUserPan) return;
             _allowUserPan = value;
-            
+
             RaisePropertyChanged(AllowUserPanProperty, !value, value);
 
             InvalidateVisual();
@@ -203,7 +203,7 @@ public class Map : Control
         }
 
         desiredSize = new Size(width, height);
-        
+
         // Take all the space we can get
         return desiredSize;
     }
@@ -219,7 +219,7 @@ public class Map : Control
             // For rendering we don't want that translation to happen
             // as we're drawing _inside_ of the control, not the parent.
             var newBounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
-            
+
             _renderOperation.Bounds = newBounds;
 
             InvalidateVisual();
@@ -238,11 +238,12 @@ public class Map : Control
 
         var positionOnViewport = e.GetPosition(this);
 
-        var mapObject = FindMapObjectUnderCursor(positionOnViewport, true);
+        SKPoint mapPosition = _renderOperation.MapViewportPositionToMapPosition(positionOnViewport);
+        var mapObject = FindMapObjectUnderCursor(mapPosition, true);
 
         if (mapObject != null)
         {
-            MapObjectSelected?.Invoke(this, new MapObjectSelectedEventArgs(mapObject));
+            MapObjectSelected?.Invoke(this, new MapObjectSelectedEventArgs(mapObject, mapPosition));
         }
 
         e.Handled = true;
@@ -255,7 +256,7 @@ public class Map : Control
             return;
         }
 
-        const double step = 0.1;
+        const double step = 0.2;
 
         var positionOnViewport = e.GetPosition(this);
 
@@ -271,14 +272,14 @@ public class Map : Control
             : e.Delta.Y > 0
                 ? step
                 : -step;
-        
+
         var newZoomLevel = (float)(ZoomLevel + increment);
-        
+
         newZoomLevel = (float)Math.Round(newZoomLevel, 1);
 
-        if (newZoomLevel < 0.1)
+        if (newZoomLevel < 0.2)
         {
-            newZoomLevel = 0.1f;
+            newZoomLevel = 0.2f;
         }
 
         _renderOperation.Zoom(
@@ -295,6 +296,14 @@ public class Map : Control
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
+        var positionOnViewport = e.GetPosition(this);
+        SKPoint mapPosition = _renderOperation.MapViewportPositionToMapPosition(positionOnViewport);
+        var mapObject = FindMapObjectUnderCursor(mapPosition, true);
+        if (mapObject != null)
+        {
+            this.Cursor = new Cursor(mapObject.CursorType);
+        }
+
         // End mouse wheel zoom when the pointer is moved
         // to prevent the zoom going all over the place
         if (_isMouseWheelZooming)
@@ -345,7 +354,7 @@ public class Map : Control
         {
             return;
         }
-        
+
         // When a drag operation is active,
         // track the delta-x and delta-y values
         // based on the start position of the
@@ -361,10 +370,8 @@ public class Map : Control
         _previousViewportPanPosition = viewportPosition;
     }
 
-    private MapObject? FindMapObjectUnderCursor(global::Avalonia.Point viewportPosition, bool forSelection)
+    private MapObject? FindMapObjectUnderCursor(SKPoint mapPosition, bool forSelection)
     {
-        var mapPosition = _renderOperation.MapViewportPositionToMapPosition(viewportPosition);
-
         var selectableObjects = MapObjects
             .Where(mo => (forSelection && mo.IsSelectable) || !forSelection)
             .ToList();

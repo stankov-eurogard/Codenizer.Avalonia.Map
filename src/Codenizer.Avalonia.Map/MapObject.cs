@@ -2,6 +2,7 @@
 // Licensed under GNU General Public License v3.0
 // See LICENSE or https://choosealicense.com/licenses/gpl-3.0/
 
+using Avalonia.Input;
 using SkiaSharp;
 
 namespace Codenizer.Avalonia.Map;
@@ -12,6 +13,8 @@ public abstract class MapObject
     public abstract SKRect Bounds { get; }
     public abstract bool IsSelectable { get; set; }
     public abstract bool IsVisible { get; set; }
+
+    public virtual StandardCursorType CursorType { get; set; } = StandardCursorType.Arrow;
 
     public void Render(SKCanvas canvas)
     {

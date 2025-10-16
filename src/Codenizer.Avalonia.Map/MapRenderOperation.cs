@@ -183,7 +183,7 @@ public class MapRenderOperation : ICustomDrawOperation
                 }
 
                 break;
-            case ZoomMode.Point when Math.Abs(_zoomLevel - 1) > 0.01 && _viewportCenterOn != null:
+            case ZoomMode.Point when _viewportCenterOn != null:
                 (matrix, newBounds) = CalculateMatrix.ForPoint(_zoomLevel, _zoomCenter.X, _zoomCenter.Y, _mapObjectsBounds,
                     _viewportBounds, _viewportCenterOn.Value);
                 break;

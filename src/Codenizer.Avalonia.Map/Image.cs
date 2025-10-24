@@ -23,7 +23,7 @@ public class Image : MapObject
     }
 
     public override string Name { get; }
-    public override SKRect Bounds { get; }
+    public override SKRect Bounds { get; set; }
     public override bool IsSelectable { get; set; } = false;
     public override bool IsVisible { get; set; } = true;
 

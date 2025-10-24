@@ -18,7 +18,7 @@ public class Square : MapObject
     }
 
     public override string Name { get; }
-    public override SKRect Bounds { get; }
+    public override SKRect Bounds { get; set; }
     public override bool IsSelectable { get; set; } = true;
     public override bool IsVisible { get; set; } = true;
 

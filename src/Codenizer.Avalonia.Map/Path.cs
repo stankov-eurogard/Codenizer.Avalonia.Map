@@ -21,7 +21,11 @@ public class Path : MapObject
     }
 
     public override string Name { get; }
-    public override SKRect Bounds => _path.Bounds;
+    public override SKRect Bounds
+    {
+        get => _path.Bounds;
+        set { }
+    }
     public override bool IsSelectable { get; set; } = true;
     public override bool IsVisible { get; set; } = true;
 

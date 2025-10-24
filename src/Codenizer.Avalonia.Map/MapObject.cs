@@ -10,7 +10,7 @@ namespace Codenizer.Avalonia.Map;
 public abstract class MapObject
 {
     public abstract string Name { get; }
-    public abstract SKRect Bounds { get; }
+    public abstract SKRect Bounds { get; set; }
     public abstract bool IsSelectable { get; set; }
     public abstract bool IsVisible { get; set; }
 

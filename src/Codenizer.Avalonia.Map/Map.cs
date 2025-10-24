@@ -3,6 +3,7 @@
 // See LICENSE or https://choosealicense.com/licenses/gpl-3.0/
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
